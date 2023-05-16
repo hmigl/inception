@@ -2,6 +2,7 @@ version: '3.9'
 
 services:
   mariadb:
+    image: mariab
     build: ./requirements/mariadb/
     container_name: mariadb
     environment:
