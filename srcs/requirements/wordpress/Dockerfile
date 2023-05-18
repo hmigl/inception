@@ -14,3 +14,11 @@ RUN mkdir -p /run/php && \
       chmod +x ./wp-cli.phar && \
       mv wp-cli.phar /usr/local/bin/wp; \
     fi
+
+COPY ./tools/wp_setup /usr/local/bin/
+
+RUN chmod +x /usr/local/bin/wp_setup
+
+ENTRYPOINT [ "wp_setup" ]
+
+CMD ["php-fpm7.3", "-F"]
