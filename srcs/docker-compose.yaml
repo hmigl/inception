@@ -1,6 +1,21 @@
 version: "3.0"
 
 services:
+
+  nginx:
+    image: nginx
+    build: ./requirements/nginx/
+    container_name: nginx
+    depends_on:
+      - wordpress
+    restart: on-failure
+    networks:
+      - inception
+    ports:
+      - "443:443"
+    volumes:
+      - wp-volume:/var/www/html
+
   wordpress:
     image: wordpress
     build: ./requirements/wordpress/
@@ -15,6 +30,8 @@ services:
     restart: on-failure
     networks:
       - inception
+    volumes:
+      - wp-volume:/var/www/html
 
   mariadb:
     image: mariadb
