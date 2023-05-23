@@ -32,3 +32,11 @@ services:
 networks:
   inception:
     name: inception
+
+volumes:
+  wp-volume:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: "${VOLUME_PATH}/wordpress"
