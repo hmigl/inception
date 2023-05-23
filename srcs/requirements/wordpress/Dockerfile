@@ -19,6 +19,8 @@ COPY ./tools/wp_setup /usr/local/bin/
 
 RUN chmod +x /usr/local/bin/wp_setup
 
+EXPOSE 9000
+
 ENTRYPOINT [ "wp_setup" ]
 
 CMD ["php-fpm7.3", "-F"]
