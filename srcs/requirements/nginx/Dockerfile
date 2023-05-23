@@ -8,6 +8,6 @@ RUN apt update && \
 
 COPY ./conf/nginx.conf /etc/nginx/conf.d/default.conf
 
-EXPOSE 443
+EXPOSE 80
 
 ENTRYPOINT [ "nginx", "-g", "daemon off;" ]
