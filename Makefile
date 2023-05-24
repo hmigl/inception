@@ -12,12 +12,12 @@ now-you-see-me-now-you-dont:
 
 disappear: now-you-see-me-now-you-dont
 	docker-compose --file $(DOCKER_COMPOSE_FILE) rm -fsv
-	docker stop $(docker ps -qa) 2> /dev/null || true
-	docker rm $(docker ps -qa) 2> /dev/null || true
-	docker rmi -f $(docker images -qa) 2> /dev/null || true
-	docker volume rm $(docker volume ls -q) 2> /dev/null || true
-	docker network rm $(docker network ls -q) 2> /dev/null || true
 	docker system prune -fa --volumes
+	docker stop $(shell docker ps -qa) 2>/dev/null || true
+	docker rm $(shell docker ps -qa) 2>/dev/null || true
+	docker rmi -f $(shell docker images -qa) 2>/dev/null || true
+	docker volume rm $(shell docker volume ls -q) 2>/dev/null || true
+	docker network rm $(shell docker network ls -q) 2>/dev/null || true
 	rm -rf $(VOL_DIR)
 
 $(VOL_DIR):
