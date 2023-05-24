@@ -1,4 +1,4 @@
-VOL_DIR := $(addprefix $(HOME)/data/, wordpress)
+VOL_DIR := $(addprefix /home/hmiguel-/data/, wordpress mariadb)
 DOCKER_COMPOSE_FILE := ./srcs/docker-compose.yaml
 
 .PHONY: magic now-you-see-me-now-you-dont disappear
@@ -16,7 +16,8 @@ disappear: now-you-see-me-now-you-dont
 	docker rmi -f $(docker images -qa) 2> /dev/null || true
 	docker volume rm $(docker volume ls -q) 2> /dev/null || true
 	docker network rm $(docker network ls -q) 2> /dev/null || true
-	docker system prune -f
+	docker system prune -fa --volumes
+	rm -rf $(VOL_DIR)
 
 $(VOL_DIR):
 	mkdir -p $@
