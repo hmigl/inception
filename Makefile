@@ -4,6 +4,7 @@ DOCKER_COMPOSE_FILE := ./srcs/docker-compose.yaml
 .PHONY: magic now-you-see-me-now-you-dont disappear
 
 magic: | $(VOL_DIR)
+	grep -Fxq "127.0.0.1 hmiguel-.42.fr" /etc/hosts || echo "127.0.0.1 hmiguel-.42.fr" | tee -a /etc/hosts
 	docker-compose --file $(DOCKER_COMPOSE_FILE) up --build
 
 now-you-see-me-now-you-dont:
