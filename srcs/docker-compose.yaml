@@ -1,7 +1,6 @@
 version: "3.0"
 
 services:
-
   nginx:
     image: nginx
     build: ./requirements/nginx/
@@ -38,6 +37,7 @@ services:
     build: ./requirements/mariadb/
     container_name: mariadb
     environment:
+      MARIADB_ROOT_USER: "${MARIADB_ROOT_USER}"
       MARIADB_ROOT_PASSWORD: "${MARIADB_ROOT_PASSWORD}"
       MARIADB_DATABASE: "${MARIADB_DATABASE}"
       MARIADB_USER: "${MARIADB_USER}"
@@ -45,6 +45,8 @@ services:
     restart: on-failure
     networks:
       - inception
+    volumes:
+      - mariadb-volume:/var/lib/mysql
 
 networks:
   inception:
@@ -57,3 +59,10 @@ volumes:
       type: none
       o: bind
       device: "${VOLUME_PATH}/wordpress"
+
+  mariadb-volume:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: "${VOLUME_PATH}/mariadb"
