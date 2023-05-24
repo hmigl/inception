@@ -13,4 +13,6 @@ COPY ./tools/mariadb_setup /usr/local/bin/
 
 RUN chmod +x /usr/local/bin/mariadb_setup
 
+EXPOSE 3306
+
 ENTRYPOINT [ "mariadb_setup" ]
