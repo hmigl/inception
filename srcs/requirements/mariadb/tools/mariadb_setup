@@ -1,16 +1,27 @@
 #!/bin/sh
 
+set -xe
+
+# Change ownership of the MySQL data directory
 chown -R mysql:mysql /var/lib/mysql
+
 if [ ! -d "/var/lib/mysql/${MARIADB_DATABASE}" ]; then
   service mysql start
 
-  mysql -u root -e "CREATE DATABASE IF NOT EXISTS ${MARIADB_DATABASE} DEFAULT CHARACTER SET utf8;"
-  mysql -u root -e "CREATE USER '${MARIADB_USER}'@'%' IDENTIFIED BY '${MARIADB_PASSWORD}';"
-  mysql -u root -e "GRANT ALL PRIVILEGES ON ${MARIADB_DATABASE}.* TO ${MARIADB_USER}@'%'"
-  mysql -u root -e "FLUSH PRIVILEGES;"
-  mysqladmin -u root password "${MARIADB_ROOT_PASSWORD}"
+  mysql -u "$MARIADB_ROOT_USER" -e "DELETE FROM mysql.user WHERE User='';"
+  mysql -u "$MARIADB_ROOT_USER" -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');"
+
+  mysql -u "$MARIADB_ROOT_USER" -e "DROP DATABASE IF EXISTS test;"
+  mysql -u "$MARIADB_ROOT_USER" -e "DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';"
+
+  mysql -u "$MARIADB_ROOT_USER" -e "CREATE DATABASE IF NOT EXISTS $MARIADB_DATABASE;"
+  mysql -u "$MARIADB_ROOT_USER" -e "GRANT ALL PRIVILEGES ON *.* TO '$MARIADB_ROOT_USER'@'localhost';"
+  mysql -u "$MARIADB_ROOT_USER" -e "GRANT ALL PRIVILEGES ON $MARIADB_DATABASE.* TO '$MARIADB_USER'@'%' IDENTIFIED BY '$MARIADB_PASSWORD';"
+  mysql -u "$MARIADB_ROOT_USER" -e "FLUSH PRIVILEGES;"
 
   service mysql stop
+
+  mysqladmin -u "$MARIADB_ROOT_USER" password "$MARIADB_ROOT_PASSWORD"
 fi
 
 /usr/bin/mysqld_safe
