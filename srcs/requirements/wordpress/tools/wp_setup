@@ -2,14 +2,27 @@
 
 set -xe
 
-if [ ! -f ./wp-config.php ] ; then
-  wp core download --allow-root && mv wp-config-sample.php wp-config.php
+if [ ! -f ./wp-config.php ]; then
+  find . -type f -not -name 'wp_setup' -delete
 
-  # Sets the value of a specific constant or variable defined in wp-config.php file
-  wp config set DB_NAME "$WP_DB_NAME" --allow-root
-  wp config set DB_USER "$WP_DB_USER" --allow-root
-  wp config set DB_PASSWORD "$WP_DB_PASSWORD" --allow-root
-  wp config set DB_HOST "$WP_DB_HOST" --allow-root
+  wp core download --allow-root
+
+  wp core config \
+      --dbname="$WP_DB_NAME" \
+      --dbuser="$WP_DB_USER" \
+      --dbpass="$WP_DB_PASSWORD" \
+      --dbhost="$WP_DB_HOST" \
+      --allow-root
+
+   wp core install \
+       --url="hmiguel-.42.fr" \
+       --title="INCEPTION" \
+       --admin_user="hmiguel-" \
+       --admin_password="$WP_DB_PASSWORD" \
+       --admin_email="hmiguel-@student.42sp.org.br" \
+       --allow-root
+
+    wp user create "user42" "user42@blazingly-fast.com" --user_pass="$WP_DB_PASSWORD" --porcelain --role=editor --allow-root
 fi
 
 exec "$@"
