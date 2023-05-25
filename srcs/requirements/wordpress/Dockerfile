@@ -3,10 +3,10 @@ FROM debian:buster
 LABEL maintainer="hmigl <hmigl@blazingly-fast.com>" \
     version="1.0"
 
-WORKDIR /var/www/html
+WORKDIR /var/www/wordpress/
 
 RUN apt update && \
-    apt install -y curl php php-fpm php-mysql
+    apt install -y curl php php-fpm php-mysql mariadb-client
 
 RUN mkdir -p /run/php && \
     echo  "\nlisten = 0.0.0.0:9000" >> /etc/php/7.3/fpm/pool.d/www.conf && \

@@ -13,7 +13,7 @@ services:
     ports:
       - "443:443"
     volumes:
-      - wp-volume:/var/www/html
+      - wp-volume:/var/www/wordpress
 
   wordpress:
     image: wordpress
@@ -30,7 +30,7 @@ services:
     networks:
       - inception
     volumes:
-      - wp-volume:/var/www/html
+      - wp-volume:/var/www/wordpress
 
   mariadb:
     image: mariadb
