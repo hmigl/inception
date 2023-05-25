@@ -2,11 +2,9 @@
 
 set -xe
 
-# Change ownership of the MySQL data directory
-chown -R mysql:mysql /var/lib/mysql
-
 if [ ! -d "/var/lib/mysql/${MARIADB_DATABASE}" ]; then
     mysql_install_db --user=mysql --datadir="/var/lib/mysql" >/dev/null
+    chown -R mysql:mysql /var/lib/mysql
 
     service mysql start
 
@@ -24,7 +22,8 @@ if [ ! -d "/var/lib/mysql/${MARIADB_DATABASE}" ]; then
       ALTER USER '$MARIADB_ROOT_USER'@'localhost' IDENTIFIED BY '${MARIADB_ROOT_PASSWORD}';
       FLUSH PRIVILEGES;
 EOF
-    sed -i "s/password =/&${MARIADB_ROOT_PASSWORD}/g" /etc/mysql/debian.cnf
+    sed -i "s/password =/& ${MARIADB_ROOT_PASSWORD}/g" /etc/mysql/debian.cnf
+
     service mysql stop
 fi
 
