@@ -20,5 +20,7 @@ disappear: now-you-see-me-now-you-dont
 	docker network rm $(shell docker network ls -q) 2>/dev/null || true
 	rm -rf $(VOL_DIR)
 
+reappear: disappear magic
+
 $(VOL_DIR):
 	mkdir -p $@
