@@ -6,23 +6,26 @@ set -xe
 chown -R mysql:mysql /var/lib/mysql
 
 if [ ! -d "/var/lib/mysql/${MARIADB_DATABASE}" ]; then
-	service mysql start
+    mysql_install_db --user=mysql --datadir="/var/lib/mysql" >/dev/null
 
-	mysql -e "CREATE DATABASE IF NOT EXISTS ${MARIADB_DATABASE}; \
-      GRANT ALL ON *.* TO '${MARIADB_ROOT_USER}'@'localhost' IDENTIFIED BY '${MARIADB_ROOT_PASSWORD}' WITH GRANT OPTION; \
-	  CREATE USER '${MARIADB_ROOT_USER}'@'%' IDENTIFIED BY '${MARIADB_ROOT_PASSWORD}'; \
-	  GRANT ALL ON *.* TO '${MARIADB_ROOT_USER}'@'%' IDENTIFIED BY '${MARIADB_ROOT_PASSWORD}' WITH GRANT OPTION; \
-	  FLUSH PRIVILEGES; \
-	  CREATE USER '${MARIADB_USER}'@'localhost' IDENTIFIED BY '${MARIADB_PASSWORD}'; \
-	  CREATE USER '${MARIADB_USER}'@'%' IDENTIFIED BY '${MARIADB_PASSWORD}'; \
-	  GRANT ALL PRIVILEGES ON *.* TO '${MARIADB_USER}'@'localhost'; \
-	  GRANT ALL PRIVILEGES ON *.* TO '${MARIADB_USER}'@'%'; \
-	  FLUSH PRIVILEGES;"
+    service mysql start
 
-	mysql -u"$MARIADB_ROOT_USER" -D"$MARIADB_DATABASE" < /tmp/dump.sql
-	service mysql stop
-
-	mysqladmin -u"$MARIADB_ROOT_USER" -p"$MARIADB_ROOT_PASSWORD" shutdown
+    mysql --user="$MARIADB_ROOT_USER" --password=""<<EOF
+      CREATE DATABASE ${MARIADB_DATABASE};
+      USE ${MARIADB_DATABASE};
+      GRANT ALL ON *.* TO '${MARIADB_USER}'@'%' IDENTIFIED BY '${MARIADB_PASSWORD}';
+      GRANT ALL ON *.* TO '${MARIADB_USER}'@'localhost' IDENTIFIED BY '${MARIADB_PASSWORD}';
+      FLUSH PRIVILEGES;
+      DELETE FROM mysql.user WHERE user='';
+      DELETE FROM mysql.user WHERE user='$MARIADB_ROOT_USER' AND host NOT IN('localhost', '127.0.0.1', '::1');
+      DROP DATABASE IF EXISTS tests;
+      DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';
+      FLUSH PRIVILEGES;
+      ALTER USER '$MARIADB_ROOT_USER'@'localhost' IDENTIFIED BY '${MARIADB_ROOT_PASSWORD}';
+      FLUSH PRIVILEGES;
+EOF
+    sed -i "s/password =/&${MARIADB_ROOT_PASSWORD}/g" /etc/mysql/debian.cnf
+    service mysql stop
 fi
 
-/usr/bin/mysqld_safe
+/usr/bin/mysqld_safe --user=mysql --datadir=/var/lib/mysql
