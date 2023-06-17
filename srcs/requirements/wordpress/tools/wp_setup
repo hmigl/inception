@@ -8,21 +8,21 @@ if [ ! -f ./wp-config.php ]; then
   wp core download --allow-root
 
   wp core config \
-      --dbname="$WP_DB_NAME" \
-      --dbuser="$WP_DB_USER" \
-      --dbpass="$WP_DB_PASSWORD" \
-      --dbhost="$WP_DB_HOST" \
+      --dbname="$MARIADB_DATABASE" \
+      --dbuser="$MARIADB_USER" \
+      --dbpass="$MARIADB_PASSWORD" \
+      --dbhost="$MARIADB_HOST" \
       --allow-root
 
    wp core install \
        --url="hmiguel-.42.fr" \
        --title="INCEPTION" \
-       --admin_user="hmiguel-" \
-       --admin_password="$WP_DB_PASSWORD" \
-       --admin_email="hmiguel-@student.42sp.org.br" \
+       --admin_user="$MARIADB_USER" \
+       --admin_password="$MARIADB_PASSWORD" \
+       --admin_email="$ADMIN_EMAIL" \
        --allow-root
 
-    wp user create "user42" "user42@blazingly-fast.com" --user_pass="$WP_DB_PASSWORD" --porcelain --role=editor --allow-root
+    wp user create "$USER2" "$USER2_EMAIL" --user_pass="$MARIADB_PASSWORD" --porcelain --role=editor --allow-root
 fi
 
 exec "$@"
